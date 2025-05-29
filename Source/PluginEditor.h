@@ -29,6 +29,11 @@ private:
     // access the processor object that created it.
     HelloMidiAudioProcessor& audioProcessor;
     juce::Slider volSlider;
-    juce::Slider phaseSlider;
+    juce::Slider panSlider;
+
+    // Slider attachments handle the connections between sliders and parameters
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volSliderAttachment;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panSliderAttachment;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HelloMidiAudioProcessorEditor)
 };

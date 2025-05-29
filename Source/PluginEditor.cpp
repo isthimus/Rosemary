@@ -23,20 +23,29 @@ HelloMidiAudioProcessorEditor::HelloMidiAudioProcessorEditor (HelloMidiAudioProc
 
     // slider bambino for the westy testy
     volSlider.setSliderStyle(juce::Slider::LinearBar);
-    volSlider.setRange(0.0, 127.0, 1.0);
+    volSlider.setRange(0.0, 1.0, 0.01);  // Range 0-1 for direct volume control
     volSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 90, 20);
     volSlider.setTextValueSuffix(" Volume");
-    volSlider.setValue(1.0);
+    volSlider.setMouseDragSensitivity(250); // Higher = more fine control
 
-    // phase rotary slider setup
-    phaseSlider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
-    phaseSlider.setRange(0.0, 360.0, 1.0);
-    phaseSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 90, 20);
-    phaseSlider.setTextValueSuffix(" Phase");
-    phaseSlider.setValue(0.0);
+    // Create the attachment - this handles all the value sync automatically
+    volSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getParameters(), "volume", volSlider);
+
+    // pan rotary slider setup
+    panSlider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+    panSlider.setRange(0.0, 1.0, 0.01);  // Range 0-1 for direct pan control
+    panSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 90, 20);
+    panSlider.setTextValueSuffix(" Pan");
+    panSlider.setMouseDragSensitivity(250);  // Higher = more fine control
+    panSlider.setDoubleClickReturnValue(true, 0.5f);  // Double-click to center
+
+    // Create the attachment for the pan slider
+    panSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getParameters(), "pan", panSlider);
 
     addAndMakeVisible(&volSlider);
-    addAndMakeVisible(&phaseSlider);
+    addAndMakeVisible(&panSlider);
 }
 
 HelloMidiAudioProcessorEditor::~HelloMidiAudioProcessorEditor()
@@ -49,9 +58,9 @@ void HelloMidiAudioProcessorEditor::paint (juce::Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
-    g.setColour (juce::Colours::white);
-    g.setFont (juce::FontOptions (15.0f));
-    g.drawFittedText ("I think this is title text?", getLocalBounds(), juce::Justification::centred, 1);
+    // g.setColour (juce::Colours::white);
+    // g.setFont (juce::FontOptions (15.0f));
+    // g.drawFittedText ("I think this is title text?", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void HelloMidiAudioProcessorEditor::resized()
@@ -67,8 +76,8 @@ void HelloMidiAudioProcessorEditor::resized()
     // Position the volume slider at the top
     volSlider.setBounds(margin, margin, getWidth() - (margin * 2), volSliderHeight);
     
-    // Position the phase slider below the volume slider
-    const int phaseY = margin + volSliderHeight + margin;  // margin below volume slider
-    const int phaseX = (getWidth() - rotarySize) / 2;  // center horizontally
-    phaseSlider.setBounds(phaseX, phaseY, rotarySize, rotarySize);
+    // Position the pan slider below the volume slider
+    const int panY = margin + volSliderHeight + margin;  // margin below volume slider
+    const int panX = (getWidth() - rotarySize) / 2;  // center horizontally
+    panSlider.setBounds(panX, panY, rotarySize, rotarySize);
 }

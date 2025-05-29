@@ -53,7 +53,23 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
+    float getVolume() const { return *volumeParameter; }
+
 private:
     //==============================================================================
+    // Value tree state for parameter management
+    juce::AudioProcessorValueTreeState parameters;
+    
+    // References to parameters for real-time audio processing
+    std::atomic<float>* volumeParameter = nullptr;
+    std::atomic<float>* panParameter = nullptr;
+
+    // Oscillator state
+    double currentPhase = 0.0;
+    double phaseIncrement = 0.0;
+    const double frequency = 500.0; // Hz
+    float getNextSample();  // Returns sawtooth wave
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HelloMidiAudioProcessor)
 };
