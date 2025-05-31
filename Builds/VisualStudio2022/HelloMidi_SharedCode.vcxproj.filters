@@ -3516,6 +3516,9 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp">
       <Filter>JUCE Library Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\OddEvenOscillator.cpp">
+      <Filter>HelloMidi\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\PluginProcessor.h">
@@ -7561,6 +7564,9 @@
     </ClInclude>
     <ClInclude Include="..\..\JuceLibraryCode\JucePluginDefines.h">
       <Filter>JUCE Library Code</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\OddEvenOscillator.h">
+      <Filter>HelloMidi\Source</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
