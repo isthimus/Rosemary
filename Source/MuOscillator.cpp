@@ -13,6 +13,10 @@ void MuOscillator::prepare(const juce::dsp::ProcessSpec& spec)
     sampleRate = spec.sampleRate;
     currentPhase.store(0.0f);
     waveshaper.prepare(spec);
+    
+    // Clamp frequency now that we have a valid sample rate
+    float nyquist = static_cast<float>(sampleRate) * 0.5f;
+    frequency = std::min(frequency, nyquist);
 }
 
 void MuOscillator::reset()

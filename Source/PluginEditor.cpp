@@ -58,9 +58,6 @@ void HelloMidiAudioProcessorEditor::paint (juce::Graphics& g)
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
 
-    // g.setColour (juce::Colours::white);
-    // g.setFont (juce::FontOptions (15.0f));
-    // g.drawFittedText ("I think this is title text?", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void HelloMidiAudioProcessorEditor::resized()
