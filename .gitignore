@@ -1,6 +1,9 @@
-Builds/VisualStudio2022/x64/
 Builds/VisualStudio2022/.vs/
 .vscode
 *.suo
 *.user
-.vs
+.vs/
+**/Debug/
+**/Release/
+**/x64/
+**/x86/

@@ -1,5 +1,7 @@
 #include "OddEvenOscillator.h"
 
+namespace rosy {
+
 OddEvenOscillator::OddEvenOscillator()
 {
 }
@@ -30,7 +32,7 @@ void OddEvenOscillator::process(const juce::dsp::ProcessContextReplacing<float>&
         
         // Write to all channels
         for (int channel = 0; channel < static_cast<int>(outputBlock.getNumChannels()); ++channel)
-            outputBlock.setSample(channel, sample, sineValue);
+            outputBlock.setSample(channel, static_cast<int>(sample), sineValue);
         
         // Update phase
         phase += static_cast<float>(phaseIncrement);
@@ -39,4 +41,6 @@ void OddEvenOscillator::process(const juce::dsp::ProcessContextReplacing<float>&
             
         currentPhase.store(phase);
     }
-} 
+}
+
+} // namespace rosy 

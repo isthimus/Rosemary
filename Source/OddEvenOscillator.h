@@ -2,6 +2,8 @@
 
 #include <JuceHeader.h>
 
+namespace rosy {
+
 class OddEvenOscillator : public juce::dsp::ProcessorBase
 {
 public:
@@ -18,4 +20,6 @@ private:
     double sampleRate { 0.0 };
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OddEvenOscillator)
-}; 
+};
+
+} // namespace rosy 
