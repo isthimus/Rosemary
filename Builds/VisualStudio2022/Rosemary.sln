@@ -2,20 +2,20 @@
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio Version 17
 
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloMidi - Standalone Plugin", "HelloMidi_StandalonePlugin.vcxproj", "{372432F2-949D-58F1-67AA-18EFD88DCA05}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rosemary - Standalone Plugin", "Rosemary_StandalonePlugin.vcxproj", "{372432F2-949D-58F1-67AA-18EFD88DCA05}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4A0199E5-4D3F-2310-9F08-C2970CD71DCC} = {4A0199E5-4D3F-2310-9F08-C2970CD71DCC}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloMidi - VST3", "HelloMidi_VST3.vcxproj", "{56FF59CE-36FF-28CE-BA0F-D44155F58245}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rosemary - VST3", "Rosemary_VST3.vcxproj", "{56FF59CE-36FF-28CE-BA0F-D44155F58245}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4A0199E5-4D3F-2310-9F08-C2970CD71DCC} = {4A0199E5-4D3F-2310-9F08-C2970CD71DCC}
 		{15763B94-520A-5B04-C9FB-6BB147814014} = {15763B94-520A-5B04-C9FB-6BB147814014}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloMidi - Shared Code", "HelloMidi_SharedCode.vcxproj", "{4A0199E5-4D3F-2310-9F08-C2970CD71DCC}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rosemary - Shared Code", "Rosemary_SharedCode.vcxproj", "{4A0199E5-4D3F-2310-9F08-C2970CD71DCC}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloMidi - VST3 Manifest Helper", "HelloMidi_VST3ManifestHelper.vcxproj", "{15763B94-520A-5B04-C9FB-6BB147814014}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rosemary - VST3 Manifest Helper", "Rosemary_VST3ManifestHelper.vcxproj", "{15763B94-520A-5B04-C9FB-6BB147814014}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

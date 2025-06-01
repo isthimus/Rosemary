@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="uSeJsC" name="HelloMidi" projectType="audioplug" useAppConfig="0"
+<JUCERPROJECT id="uSeJsC" name="Rosemary" projectType="audioplug" useAppConfig="0"
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth">
-  <MAINGROUP id="Zaq63g" name="HelloMidi">
+  <MAINGROUP id="Zaq63g" name="Rosemary">
     <GROUP id="{C0D3ED44-C392-BD24-B993-4DDC41E4D802}" name="Source">
       <FILE id="cm7Qt0" name="HarmonicProfileCalculator.cpp" compile="1"
             resource="0" file="Source/HarmonicProfileCalculator.cpp"/>

@@ -10,7 +10,7 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-HelloMidiAudioProcessor::HelloMidiAudioProcessor()
+RosemaryAudioProcessor::RosemaryAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
                      #if ! JucePlugin_IsMidiEffect
@@ -46,17 +46,17 @@ HelloMidiAudioProcessor::HelloMidiAudioProcessor()
     panParameter = parameters.getRawParameterValue("pan");
 }
 
-HelloMidiAudioProcessor::~HelloMidiAudioProcessor()
+RosemaryAudioProcessor::~RosemaryAudioProcessor()
 {
 }
 
 //==============================================================================
-const juce::String HelloMidiAudioProcessor::getName() const
+const juce::String RosemaryAudioProcessor::getName() const
 {
     return JucePlugin_Name;
 }
 
-bool HelloMidiAudioProcessor::acceptsMidi() const
+bool RosemaryAudioProcessor::acceptsMidi() const
 {
    #if JucePlugin_WantsMidiInput
     return true;
@@ -65,7 +65,7 @@ bool HelloMidiAudioProcessor::acceptsMidi() const
    #endif
 }
 
-bool HelloMidiAudioProcessor::producesMidi() const
+bool RosemaryAudioProcessor::producesMidi() const
 {
    #if JucePlugin_ProducesMidiOutput
     return true;
@@ -74,7 +74,7 @@ bool HelloMidiAudioProcessor::producesMidi() const
    #endif
 }
 
-bool HelloMidiAudioProcessor::isMidiEffect() const
+bool RosemaryAudioProcessor::isMidiEffect() const
 {
    #if JucePlugin_IsMidiEffect
     return true;
@@ -83,50 +83,50 @@ bool HelloMidiAudioProcessor::isMidiEffect() const
    #endif
 }
 
-double HelloMidiAudioProcessor::getTailLengthSeconds() const
+double RosemaryAudioProcessor::getTailLengthSeconds() const
 {
     return 0.0;
 }
 
-int HelloMidiAudioProcessor::getNumPrograms()
+int RosemaryAudioProcessor::getNumPrograms()
 {
     return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
                 // so this should be at least 1, even if you're not really implementing programs.
 }
 
-int HelloMidiAudioProcessor::getCurrentProgram()
+int RosemaryAudioProcessor::getCurrentProgram()
 {
     return 0;
 }
 
-void HelloMidiAudioProcessor::setCurrentProgram (int index)
+void RosemaryAudioProcessor::setCurrentProgram (int index)
 {
 }
 
-const juce::String HelloMidiAudioProcessor::getProgramName (int index)
+const juce::String RosemaryAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void HelloMidiAudioProcessor::changeProgramName (int index, const juce::String& newName)
+void RosemaryAudioProcessor::changeProgramName (int index, const juce::String& newName)
 {
 }
 
 //==============================================================================
-void HelloMidiAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void RosemaryAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     // Calculate phase increment for our sawtooth
     phaseIncrement = frequency / sampleRate;
 }
 
-void HelloMidiAudioProcessor::releaseResources()
+void RosemaryAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool HelloMidiAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool RosemaryAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
   #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -152,7 +152,7 @@ bool HelloMidiAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts
 #endif
 
 // Helper function to generate sawtooth wave
-float HelloMidiAudioProcessor::getNextSample()
+float RosemaryAudioProcessor::getNextSample()
 {
     // Update phase
     currentPhase += phaseIncrement;
@@ -163,7 +163,7 @@ float HelloMidiAudioProcessor::getNextSample()
     return (float)(2.0 * currentPhase - 1.0);
 }
 
-void HelloMidiAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void RosemaryAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
     auto totalNumInputChannels  = getTotalNumInputChannels();
@@ -231,25 +231,25 @@ void HelloMidiAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, ju
 }
 
 //==============================================================================
-bool HelloMidiAudioProcessor::hasEditor() const
+bool RosemaryAudioProcessor::hasEditor() const
 {
     return true; // (change this to false if you choose to not supply an editor)
 }
 
-juce::AudioProcessorEditor* HelloMidiAudioProcessor::createEditor()
+juce::AudioProcessorEditor* RosemaryAudioProcessor::createEditor()
 {
-    return new HelloMidiAudioProcessorEditor (*this);
+    return new RosemaryAudioProcessorEditor (*this);
 }
 
 //==============================================================================
-void HelloMidiAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
+void RosemaryAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void HelloMidiAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void RosemaryAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
@@ -259,5 +259,5 @@ void HelloMidiAudioProcessor::setStateInformation (const void* data, int sizeInB
 // This creates new instances of the plugin..
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
-    return new HelloMidiAudioProcessor();
+    return new RosemaryAudioProcessor();
 }

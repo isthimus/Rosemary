@@ -2,11 +2,11 @@
 
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="HelloMidi\Source">
-      <UniqueIdentifier>{1D570AAC-709C-CBC6-B21B-6517C67C1547}</UniqueIdentifier>
+    <Filter Include="Rosemary\Source">
+      <UniqueIdentifier>{F2F9C362-16D8-3841-6BC9-7ACFDA984EE1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="HelloMidi">
-      <UniqueIdentifier>{2713AC4D-B0AD-54C6-ECE5-D836CA281DA8}</UniqueIdentifier>
+    <Filter Include="Rosemary">
+      <UniqueIdentifier>{F06B3E28-DBA3-32E8-B3CF-0400D3DBEAC0}</UniqueIdentifier>
     </Filter>
     <Filter Include="JUCE Modules\juce_audio_basics\audio_play_head">
       <UniqueIdentifier>{EB58F05A-A968-CEBE-40C4-107CDD8F240F}</UniqueIdentifier>
@@ -695,16 +695,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\HarmonicProfileCalculator.cpp">
-      <Filter>HelloMidi\Source</Filter>
+      <Filter>Rosemary\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\OddEvenOscillator.cpp">
-      <Filter>HelloMidi\Source</Filter>
+      <Filter>Rosemary\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\PluginProcessor.cpp">
-      <Filter>HelloMidi\Source</Filter>
+      <Filter>Rosemary\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\PluginEditor.cpp">
-      <Filter>HelloMidi\Source</Filter>
+      <Filter>Rosemary\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\..\..\..\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.cpp">
       <Filter>JUCE Modules\juce_audio_basics\audio_play_head</Filter>
@@ -3673,16 +3673,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\HarmonicProfileCalculator.h">
-      <Filter>HelloMidi\Source</Filter>
+      <Filter>Rosemary\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\OddEvenOscillator.h">
-      <Filter>HelloMidi\Source</Filter>
+      <Filter>Rosemary\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\PluginEditor.h">
-      <Filter>HelloMidi\Source</Filter>
+      <Filter>Rosemary\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\PluginProcessor.h">
-      <Filter>HelloMidi\Source</Filter>
+      <Filter>Rosemary\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\..\..\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">
       <Filter>JUCE Modules\juce_audio_basics\audio_play_head</Filter>

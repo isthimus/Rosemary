@@ -14,11 +14,11 @@
 //==============================================================================
 /**
 */
-class HelloMidiAudioProcessorEditor  : public juce::AudioProcessorEditor
+class RosemaryAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
-    HelloMidiAudioProcessorEditor (HelloMidiAudioProcessor&);
-    ~HelloMidiAudioProcessorEditor() override;
+    RosemaryAudioProcessorEditor (RosemaryAudioProcessor&);
+    ~RosemaryAudioProcessorEditor() override;
 
     //==============================================================================
     void paint (juce::Graphics&) override;
@@ -27,7 +27,7 @@ public:
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
-    HelloMidiAudioProcessor& audioProcessor;
+    RosemaryAudioProcessor& audioProcessor;
     juce::Slider volSlider;
     juce::Slider panSlider;
 
@@ -35,5 +35,5 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volSliderAttachment;
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> panSliderAttachment;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HelloMidiAudioProcessorEditor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RosemaryAudioProcessorEditor)
 };

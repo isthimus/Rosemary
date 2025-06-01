@@ -13,12 +13,12 @@
 //==============================================================================
 /**
 */
-class HelloMidiAudioProcessor  : public juce::AudioProcessor
+class RosemaryAudioProcessor  : public juce::AudioProcessor
 {
 public:
     //==============================================================================
-    HelloMidiAudioProcessor();
-    ~HelloMidiAudioProcessor() override;
+    RosemaryAudioProcessor();
+    ~RosemaryAudioProcessor() override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -71,5 +71,5 @@ private:
     const double frequency = 500.0; // Hz
     float getNextSample();  // Returns sawtooth wave
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (HelloMidiAudioProcessor)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RosemaryAudioProcessor)
 };
