@@ -30,7 +30,7 @@ RosemaryAudioProcessor::RosemaryAudioProcessor()
                 "Volume",     // parameter name
                 0.0f,        // minimum value
                 1.0f,        // maximum value
-                0.0f        // default value - starting with silence
+                0.5f        // default value - starting at half volume
             ),
             std::make_unique<juce::AudioParameterFloat>(
                 "pan",       // parameter ID
@@ -38,6 +38,27 @@ RosemaryAudioProcessor::RosemaryAudioProcessor()
                 0.0f,       // minimum value
                 1.0f,       // maximum value
                 0.5f       // default value (center)
+            ),
+            std::make_unique<juce::AudioParameterFloat>(
+                "pitch",     // parameter ID
+                "Pitch",     // parameter name
+                0.0f,       // minimum value
+                1.0f,       // maximum value
+                0.5f       // default value
+            ),
+            std::make_unique<juce::AudioParameterFloat>(
+                "shapeX",    // parameter ID
+                "Shape X",   // parameter name
+                0.0f,       // minimum value
+                1.0f,       // maximum value
+                0.5f       // default value
+            ),
+            std::make_unique<juce::AudioParameterFloat>(
+                "shapeY",    // parameter ID
+                "Shape Y",   // parameter name
+                0.0f,       // minimum value
+                1.0f,       // maximum value
+                0.5f       // default value
             )
         })
 {
@@ -117,6 +138,15 @@ void RosemaryAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
 {
     // Calculate phase increment for our sawtooth
     phaseIncrement = frequency / sampleRate;
+
+    // Prepare MuOscillator
+    juce::dsp::ProcessSpec spec;
+    spec.sampleRate = sampleRate;
+    spec.maximumBlockSize = samplesPerBlock;
+    spec.numChannels = getTotalNumOutputChannels();
+    
+    muOscillator.prepare(spec);
+    muOscillator.setFrequency(static_cast<float>(frequency));
 }
 
 void RosemaryAudioProcessor::releaseResources()
@@ -169,64 +199,62 @@ void RosemaryAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // Clear any unused channels
+    // Only clear input channels if we have more outputs than inputs
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
     const float currentVol = *volumeParameter;
     const float pan = *panParameter;
 
-    // Generate one buffer of samples that we'll use for all channels
-    juce::AudioBuffer<float> sawBuffer(1, buffer.getNumSamples());
-    auto* sawData = sawBuffer.getWritePointer(0);
-    for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-    {
-        sawData[sample] = getNextSample();
-    }
+    // Convert AudioBuffer to AudioBlock
+    juce::dsp::AudioBlock<float> block(buffer);
+    
+    // Create a ProcessContext that will replace the output
+    juce::dsp::ProcessContextReplacing<float> context(block);
+    
+    // Process the audio through muOscillator
+    muOscillator.process(context);
 
-    if (totalNumOutputChannels == 1)
-    {
-        // Mono output - just apply volume
-        auto* channelData = buffer.getWritePointer(0);
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-        {
-            channelData[sample] = sawData[sample] * currentVol;
+    // Debug: Check if we have any non-zero samples after oscillator
+    bool hasSignal = false;
+    for (int channel = 0; channel < totalNumOutputChannels && !hasSignal; ++channel) {
+        auto* channelData = buffer.getReadPointer(channel);
+        for (int sample = 0; sample < buffer.getNumSamples() && !hasSignal; ++sample) {
+            if (std::abs(channelData[sample]) > 0.0001f) {
+                hasSignal = true;
+                DBG("Signal detected after oscillator: " << channelData[sample] << " at sample " << sample);
+            }
         }
     }
-    else if (totalNumOutputChannels == 2)
+    
+    // Apply volume and panning
+    if (totalNumOutputChannels == 2)
     {
-        // Stereo output - apply equal power panning
-        auto* leftChannel = buffer.getWritePointer(0);
-        auto* rightChannel = buffer.getWritePointer(1);
-        
-        // Equal power panning using sin/cos
+        // Equal power panning using sin/cos for stereo
         const float panRadians = pan * juce::MathConstants<float>::halfPi;
         const float leftGain = std::cos(panRadians) * currentVol;
         const float rightGain = std::sin(panRadians) * currentVol;
 
-        for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-        {
-            leftChannel[sample] = sawData[sample] * leftGain;
-            rightChannel[sample] = sawData[sample] * rightGain;
+        DBG("Volume: " << currentVol << " Pan: " << pan << " Left gain: " << leftGain << " Right gain: " << rightGain);
+
+        buffer.applyGain(0, 0, buffer.getNumSamples(), leftGain);
+        buffer.applyGain(1, 0, buffer.getNumSamples(), rightGain);
+
+        // Debug: Check if we have any non-zero samples after volume
+        hasSignal = false;
+        for (int channel = 0; channel < totalNumOutputChannels && !hasSignal; ++channel) {
+            auto* channelData = buffer.getReadPointer(channel);
+            for (int sample = 0; sample < buffer.getNumSamples() && !hasSignal; ++sample) {
+                if (std::abs(channelData[sample]) > 0.0001f) {
+                    hasSignal = true;
+                    DBG("Signal detected after volume: " << channelData[sample] << " at sample " << sample);
+                }
+            }
         }
     }
     else
     {
-        // Multichannel output - spread the sawtooth across all channels
-        for (int channel = 0; channel < totalNumOutputChannels; ++channel)
-        {
-            auto* channelData = buffer.getWritePointer(channel);
-            // Even channels get left-biased gain, odd channels get right-biased
-            const float panRadians = pan * juce::MathConstants<float>::halfPi;
-            float channelGain = (channel % 2 == 0) 
-                ? std::cos(panRadians) * currentVol
-                : std::sin(panRadians) * currentVol;
-
-            for (int sample = 0; sample < buffer.getNumSamples(); ++sample)
-            {
-                channelData[sample] = sawData[sample] * channelGain;
-            }
-        }
+        buffer.applyGain(currentVol);
     }
 }
 

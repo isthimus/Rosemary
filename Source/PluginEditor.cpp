@@ -15,37 +15,54 @@ RosemaryAudioProcessorEditor::RosemaryAudioProcessorEditor (RosemaryAudioProcess
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 400);
+    setSize (600, 400);
     
     // Make the window resizable with a minimum and maximum size
     setResizable(true, true);
-    setResizeLimits(300, 250, 800, 600);
+    setResizeLimits(400, 300, 800, 600);
 
-    // slider bambino for the westy testy
-    volSlider.setSliderStyle(juce::Slider::LinearBar);
-    volSlider.setRange(0.0, 1.0, 0.01);  // Range 0-1 for direct volume control
-    volSlider.setTextBoxStyle(juce::Slider::TextBoxRight, false, 90, 20);
-    volSlider.setTextValueSuffix(" Volume");
-    volSlider.setMouseDragSensitivity(250); // Higher = more fine control
+    // Common slider settings for all rotary sliders
+    auto setupRotarySlider = [](juce::Slider& slider, const juce::String& suffix)
+    {
+        slider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
+        slider.setRange(0.0, 1.0, 0.01);
+        slider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 90, 20);
+        slider.setTextValueSuffix(suffix);
+        slider.setMouseDragSensitivity(250);
+        slider.setDoubleClickReturnValue(true, 0.5f);
+    };
 
-    // Create the attachment - this handles all the value sync automatically
+    // Setup volume slider
+    setupRotarySlider(volSlider, " Volume");
     volSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getParameters(), "volume", volSlider);
 
-    // pan rotary slider setup
-    panSlider.setSliderStyle(juce::Slider::RotaryVerticalDrag);
-    panSlider.setRange(0.0, 1.0, 0.01);  // Range 0-1 for direct pan control
-    panSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 90, 20);
-    panSlider.setTextValueSuffix(" Pan");
-    panSlider.setMouseDragSensitivity(250);  // Higher = more fine control
-    panSlider.setDoubleClickReturnValue(true, 0.5f);  // Double-click to center
-
-    // Create the attachment for the pan slider
+    // Setup pan slider
+    setupRotarySlider(panSlider, " Pan");
     panSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getParameters(), "pan", panSlider);
 
+    // Setup pitch slider
+    setupRotarySlider(pitchSlider, " Pitch");
+    pitchSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getParameters(), "pitch", pitchSlider);
+
+    // Setup shapeX slider
+    setupRotarySlider(shapeXSlider, " Shape X");
+    shapeXSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getParameters(), "shapeX", shapeXSlider);
+
+    // Setup shapeY slider
+    setupRotarySlider(shapeYSlider, " Shape Y");
+    shapeYSliderAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getParameters(), "shapeY", shapeYSlider);
+
+    // Add all sliders to the editor
     addAndMakeVisible(&volSlider);
     addAndMakeVisible(&panSlider);
+    addAndMakeVisible(&pitchSlider);
+    addAndMakeVisible(&shapeXSlider);
+    addAndMakeVisible(&shapeYSlider);
 }
 
 RosemaryAudioProcessorEditor::~RosemaryAudioProcessorEditor()
@@ -55,26 +72,41 @@ RosemaryAudioProcessorEditor::~RosemaryAudioProcessorEditor()
 //==============================================================================
 void RosemaryAudioProcessorEditor::paint (juce::Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
-
+    // Fill the background
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 }
 
 void RosemaryAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    auto bounds = getLocalBounds();
+    const int margin = 20;
+    bounds.reduce(margin, margin);
 
-    // Calculate proportional bounds for the sliders
-    const int margin = 20;  // margin from edges
-    const int volSliderHeight = 30;  // height for horizontal slider
-    const int rotarySize = 100;  // size for the rotary slider
+    // Create the main vertical flexbox
+    juce::FlexBox mainBox;
+    mainBox.flexDirection = juce::FlexBox::Direction::column;
+    mainBox.justifyContent = juce::FlexBox::JustifyContent::center;
+    mainBox.alignContent = juce::FlexBox::AlignContent::center;
 
-    // Position the volume slider at the top
-    volSlider.setBounds(margin, margin, getWidth() - (margin * 2), volSliderHeight);
-    
-    // Position the pan slider below the volume slider
-    const int panY = margin + volSliderHeight + margin;  // margin below volume slider
-    const int panX = (getWidth() - rotarySize) / 2;  // center horizontally
-    panSlider.setBounds(panX, panY, rotarySize, rotarySize);
+    // Create top row flexbox
+    juce::FlexBox topRow;
+    topRow.flexDirection = juce::FlexBox::Direction::row;
+    topRow.justifyContent = juce::FlexBox::JustifyContent::spaceBetween;
+    topRow.items.add(juce::FlexItem(volSlider).withFlex(1));
+    topRow.items.add(juce::FlexItem(panSlider).withFlex(1));
+    topRow.items.add(juce::FlexItem(pitchSlider).withFlex(1));
+
+    // Create bottom row flexbox
+    juce::FlexBox bottomRow;
+    bottomRow.flexDirection = juce::FlexBox::Direction::row;
+    bottomRow.justifyContent = juce::FlexBox::JustifyContent::center;
+    bottomRow.items.add(juce::FlexItem(shapeXSlider).withFlex(1));
+    bottomRow.items.add(juce::FlexItem(shapeYSlider).withFlex(1));
+
+    // Add the rows to the main box with equal flex
+    mainBox.items.add(juce::FlexItem(topRow).withFlex(1));
+    mainBox.items.add(juce::FlexItem(bottomRow).withFlex(1));
+
+    // Perform the layout
+    mainBox.performLayout(bounds);
 }

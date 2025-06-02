@@ -697,7 +697,7 @@
     <ClCompile Include="..\..\Source\HarmonicProfileCalculator.cpp">
       <Filter>Rosemary\Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\OddEvenOscillator.cpp">
+    <ClCompile Include="..\..\Source\MuOscillator.cpp">
       <Filter>Rosemary\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\PluginProcessor.cpp">
@@ -3675,7 +3675,7 @@
     <ClInclude Include="..\..\Source\HarmonicProfileCalculator.h">
       <Filter>Rosemary\Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\OddEvenOscillator.h">
+    <ClInclude Include="..\..\Source\MuOscillator.h">
       <Filter>Rosemary\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\PluginEditor.h">

@@ -50,7 +50,7 @@ private:
     double sampleRate { 0.0 };
     
     PolyEvaluator polyEvaluator;
-    juce::dsp::WaveShaper<float, PolyEvaluator> waveshaper { polyEvaluator };
+    juce::dsp::WaveShaper<float, std::function<float(float)>> waveshaper;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MuOscillator)
 };

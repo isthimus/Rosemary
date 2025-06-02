@@ -5,7 +5,7 @@ namespace rosy {
 MuOscillator::MuOscillator()
 {
     // Initialize with a simple sine wave (first harmonic only)
-    setHarmonicGains({1.0f});
+    setHarmonicGains({1.0f, 0.5f, 0.25f, 0.125f});
 }
 
 void MuOscillator::prepare(const juce::dsp::ProcessSpec& spec)
@@ -13,6 +13,9 @@ void MuOscillator::prepare(const juce::dsp::ProcessSpec& spec)
     sampleRate = spec.sampleRate;
     currentPhase.store(0.0f);
     waveshaper.prepare(spec);
+    
+    // Bind the polyEvaluator to the waveshaper
+    waveshaper.functionToUse = [this](float x) { return polyEvaluator(x); };
     
     // Clamp frequency now that we have a valid sample rate
     float nyquist = static_cast<float>(sampleRate) * 0.5f;
@@ -29,6 +32,7 @@ void MuOscillator::process(const juce::dsp::ProcessContextReplacing<float>& cont
 {
     auto& outputBlock = context.getOutputBlock();
     const float phaseIncrement = frequency / static_cast<float>(sampleRate);
+
 
     // Generate phase-based sine wave
     for (size_t sample = 0; sample < outputBlock.getNumSamples(); ++sample)

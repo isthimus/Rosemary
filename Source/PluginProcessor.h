@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "MuOscillator.h"
 
 //==============================================================================
 /**
@@ -70,6 +71,9 @@ private:
     double phaseIncrement = 0.0;
     const double frequency = 500.0; // Hz
     float getNextSample();  // Returns sawtooth wave
+
+    // MuOscillator
+    rosy::MuOscillator muOscillator;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RosemaryAudioProcessor)
 };
