@@ -14,7 +14,8 @@
 //==============================================================================
 /**
 */
-class RosemaryAudioProcessorEditor  : public juce::AudioProcessorEditor
+class RosemaryAudioProcessorEditor  : public juce::AudioProcessorEditor,
+                                     public juce::Timer
 {
 public:
     RosemaryAudioProcessorEditor (RosemaryAudioProcessor&);
@@ -23,6 +24,9 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    
+    // Timer callback to update the harmonic gains display
+    void timerCallback() override;
 
 private:
     // This reference is provided as a quick way for your editor to
@@ -35,6 +39,10 @@ private:
     juce::Slider pitchSlider;
     juce::Slider shapeXSlider;
     juce::Slider shapeYSlider;
+
+    juce::Label harmonicsLabel;  // Display for harmonic gains
+    juce::Label preVolumePeakLabel;   // Display for pre-volume peak level
+    juce::Label postVolumePeakLabel;  // Display for post-volume peak level
 
     // Slider attachments handle the connections between sliders and parameters
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> volSliderAttachment;

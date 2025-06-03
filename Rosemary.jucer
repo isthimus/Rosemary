@@ -4,6 +4,9 @@
               addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth">
   <MAINGROUP id="Zaq63g" name="Rosemary">
     <GROUP id="{C0D3ED44-C392-BD24-B993-4DDC41E4D802}" name="Source">
+      <FILE id="oVlNw2" name="DbCalculator.cpp" compile="1" resource="0"
+            file="Source/DbCalculator.cpp"/>
+      <FILE id="KdBCOa" name="DbCalculator.h" compile="0" resource="0" file="Source/DbCalculator.h"/>
       <FILE id="cm7Qt0" name="HarmonicProfileCalculator.cpp" compile="1"
             resource="0" file="Source/HarmonicProfileCalculator.cpp"/>
       <FILE id="tuKKCM" name="HarmonicProfileCalculator.h" compile="0" resource="0"

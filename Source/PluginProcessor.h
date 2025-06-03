@@ -10,16 +10,21 @@
 
 #include <JuceHeader.h>
 #include "MuOscillator.h"
+#include "DbCalculator.h"
 
 //==============================================================================
 /**
 */
-class RosemaryAudioProcessor  : public juce::AudioProcessor
+class RosemaryAudioProcessor  : public juce::AudioProcessor,
+                               public juce::AudioProcessorValueTreeState::Listener
 {
 public:
     //==============================================================================
     RosemaryAudioProcessor();
     ~RosemaryAudioProcessor() override;
+
+    // Parameter listener callback
+    void parameterChanged(const juce::String& parameterID, float newValue) override;
 
     //==============================================================================
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
@@ -56,6 +61,13 @@ public:
 
     juce::AudioProcessorValueTreeState& getParameters() { return parameters; }
     float getVolume() const { return *volumeParameter; }
+    
+    // Get current harmonic gains for display
+    const std::vector<float>& getCurrentHarmonicGains() const { return muOscillator.getCurrentHarmonicGains(); }
+    
+    // Get current peak levels in dB
+    float getCurrentPreVolumeDb() const { return preVolumePeakCalculator.getPeakDb(); }
+    float getCurrentPostVolumeDb() const { return postVolumePeakCalculator.getPeakDb(); }
 
 private:
     //==============================================================================
@@ -74,6 +86,10 @@ private:
 
     // MuOscillator
     rosy::MuOscillator muOscillator;
+    
+    // Peak level calculators
+    rosy::DbCalculator preVolumePeakCalculator;
+    rosy::DbCalculator postVolumePeakCalculator;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (RosemaryAudioProcessor)
 };

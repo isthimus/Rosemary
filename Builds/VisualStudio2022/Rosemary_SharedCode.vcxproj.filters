@@ -694,6 +694,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\DbCalculator.cpp">
+      <Filter>Rosemary\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\HarmonicProfileCalculator.cpp">
       <Filter>Rosemary\Source</Filter>
     </ClCompile>
@@ -3672,6 +3675,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\DbCalculator.h">
+      <Filter>Rosemary\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\HarmonicProfileCalculator.h">
       <Filter>Rosemary\Source</Filter>
     </ClInclude>

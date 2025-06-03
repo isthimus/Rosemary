@@ -1,5 +1,6 @@
 #include "HarmonicProfileCalculator.h"
 #include <cmath>
+#include <numeric>
 
 namespace rosy {
 
@@ -94,6 +95,20 @@ std::vector<float> HarmonicProfileCalculator::calculateAllCoefficients(const std
     for (size_t i = 0; i <= harmonicGains.size(); ++i)
     {
         coeffs[i] = calculateCoefficient(static_cast<int>(i), harmonicGains);
+    }
+    
+    // Calculate the peak value by evaluating at x = 1
+    // (which simplifies to just summing the coefficients)
+    float peakValue = std::accumulate(coeffs.begin(), coeffs.end(), 0.0f);
+    
+    // Normalize coefficients to make peak value = 1
+    if (std::abs(peakValue) > 1e-10f)  // Avoid division by zero
+    {
+        float normFactor = 1.0f / peakValue;
+        for (float& coeff : coeffs)
+        {
+            coeff *= normFactor;
+        }
     }
     
     return coeffs;

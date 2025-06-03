@@ -4,8 +4,10 @@ namespace rosy {
 
 MuOscillator::MuOscillator()
 {
-    // Initialize with a simple sine wave (first harmonic only)
-    setHarmonicGains({1.0f, 0.5f, 0.25f, 0.125f});
+    // Initialize with first harmonic only (fundamental frequency)
+    currentHarmonicGains.resize(numHarmonics, 0.0f);
+    currentHarmonicGains[0] = 1.0f;
+    updatePolyEvalGains(currentHarmonicGains);
 }
 
 void MuOscillator::prepare(const juce::dsp::ProcessSpec& spec)
@@ -33,7 +35,6 @@ void MuOscillator::process(const juce::dsp::ProcessContextReplacing<float>& cont
     auto& outputBlock = context.getOutputBlock();
     const float phaseIncrement = frequency / static_cast<float>(sampleRate);
 
-
     // Generate phase-based sine wave
     for (size_t sample = 0; sample < outputBlock.getNumSamples(); ++sample)
     {
@@ -58,7 +59,7 @@ void MuOscillator::process(const juce::dsp::ProcessContextReplacing<float>& cont
     waveshaper.process(context);
 }
 
-void MuOscillator::setHarmonicGains(const std::vector<float>& gains)
+void MuOscillator::updatePolyEvalGains(const std::vector<float>& gains)
 {
     polyEvaluator.setCoefficients(HarmonicProfileCalculator::calculateAllCoefficients(gains));
 }
@@ -74,6 +75,38 @@ void MuOscillator::setFrequency(float freq)
     {
         frequency = freq;  // Can't clamp yet, no sample rate
     }
+}
+
+float MuOscillator::calculateHarmonicGain(int harmonicIndex, float shape) const
+{
+    // Clamp shape between 0 and 1
+    shape = std::max(0.0f, std::min(1.0f, shape));
+    
+    // When shape is 0, gain is 0
+    // When shape is 1, gain is 1/(i+1)
+    // In between, we get a sharper rolloff controlled by rolloffSharpness
+    return std::pow(shape, (harmonicIndex + 1) * rolloffSharpness / 2.0f) / (harmonicIndex + 1);
+}
+
+void MuOscillator::setShapeX(float x)
+{
+    // Shape even harmonics (indices 1, 3, 5, ...)
+    for (int i = 1; i < numHarmonics; i += 2)
+    {
+        currentHarmonicGains[i] = calculateHarmonicGain(i, x);
+    }
+    updatePolyEvalGains(currentHarmonicGains);
+}
+
+void MuOscillator::setShapeY(float y)
+{
+    // Shape odd harmonics (indices 2, 4, 6, ...)
+    // Note: We skip index 0 (fundamental) as it stays at 1.0
+    for (int i = 2; i < numHarmonics; i += 2)
+    {
+        currentHarmonicGains[i] = calculateHarmonicGain(i, y);
+    }
+    updatePolyEvalGains(currentHarmonicGains);
 }
 
 } // namespace rosy 

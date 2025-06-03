@@ -74,6 +74,43 @@ private:
      * Uses the cached binomial coefficients from LookupTables for efficiency.
      */
     static float chebyshevCoefficient(int n, int i);
+
+    /*
+    // Alternative implementation using Chebyshev polynomials of the second kind (U_n)
+    // Currently unused but preserved for future experimentation
+    // 
+    // Key differences from first kind (T_n):
+    // - U_n polynomials are based on sine relationships: U_n(cos θ) = sin((n+1)θ)/sin(θ)
+    // - Values at x=1 alternate between n+1 and -(n+1) instead of all being 1
+    // - This leads to better peak/RMS ratio in the output waveform
+    // - Same computational cost as T_n when implemented as polynomials
+    //
+    // The coefficient calculation follows the recurrence relation:
+    // U_0(x) = 1
+    // U_1(x) = 2x
+    // U_n(x) = 2xU_{n-1}(x) - U_{n-2}(x)
+    static float chebyshevSecondKindCoefficient(int n, int i)
+    {
+        // Early exit if i > n or parity doesn't match
+        if (i > n || ((n - i) % 2 != 0)) return 0.0f;
+        
+        float coeff = 0.0f;
+        int maxJ = (n - i) / 2;
+        const auto& lookupTables = LookupTables::getInstance();
+        
+        for (int j = 0; j <= maxJ; ++j)
+        {
+            // The main difference from T_n is in how the binomial terms combine
+            // This generates coefficients for U_n instead of T_n
+            float term = std::powf(-1.0f, static_cast<float>(j)) * 
+                        lookupTables.getBinomial(n + 1, j) * 
+                        std::powf(2.0f, static_cast<float>(n - 2 * j - i));
+            coeff += term;
+        }
+        
+        return coeff;
+    }
+    */
 };
 
 } // namespace rosy 

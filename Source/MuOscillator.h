@@ -41,13 +41,30 @@ public:
     void process(const juce::dsp::ProcessContextReplacing<float>& context) override;
 
     //==============================================================================
-    void setHarmonicGains(const std::vector<float>& gains);
     void setFrequency(float freq);
+    void setShapeX(float x);
+    void setShapeY(float y);
+    
+    // Get current harmonic gains for display/debugging
+    const std::vector<float>& getCurrentHarmonicGains() const { return currentHarmonicGains; }
 
+protected:
+    float calculateHarmonicGain(int harmonicIndex, float shape) const;
+    
 private:
+    void updatePolyEvalGains(const std::vector<float>& gains);
+    
     std::atomic<float> currentPhase { 0.0f };
     float frequency { 440.0f };
     double sampleRate { 0.0 };
+    
+    static constexpr int numHarmonics { 16 };
+    std::vector<float> currentHarmonicGains;
+    
+    // Controls how quickly harmonics roll off when shape parameter is < 1.0
+    // Has no effect when shape = 1.0 (pure reciprocal rolloff)
+    // Higher values = sharper rolloff
+    float rolloffSharpness { 1.2f };
     
     PolyEvaluator polyEvaluator;
     juce::dsp::WaveShaper<float, std::function<float(float)>> waveshaper;

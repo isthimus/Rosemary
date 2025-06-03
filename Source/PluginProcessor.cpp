@@ -28,47 +28,56 @@ RosemaryAudioProcessor::RosemaryAudioProcessor()
             std::make_unique<juce::AudioParameterFloat>(
                 "volume",     // parameter ID
                 "Volume",     // parameter name
-                0.0f,        // minimum value
-                1.0f,        // maximum value
-                0.5f        // default value - starting at half volume
+                juce::NormalisableRange<float>(0.0f, 1.0f, 0.005f, 0.2f),  // range with step size and skew factor for logarithmic
+                0.5f         // default value - starting at half volume
             ),
             std::make_unique<juce::AudioParameterFloat>(
                 "pan",       // parameter ID
                 "Pan",       // parameter name
-                0.0f,       // minimum value
-                1.0f,       // maximum value
-                0.5f       // default value (center)
+                juce::NormalisableRange<float>(0.0f, 1.0f, 0.005f),  // range with step size
+                0.5f        // default value (center)
             ),
             std::make_unique<juce::AudioParameterFloat>(
                 "pitch",     // parameter ID
                 "Pitch",     // parameter name
-                0.0f,       // minimum value
-                1.0f,       // maximum value
-                0.5f       // default value
+                juce::NormalisableRange<float>(0.0f, 1.0f, 0.005f),  // range with step size
+                0.5f        // default value
             ),
             std::make_unique<juce::AudioParameterFloat>(
                 "shapeX",    // parameter ID
                 "Shape X",   // parameter name
-                0.0f,       // minimum value
-                1.0f,       // maximum value
-                0.5f       // default value
+                juce::NormalisableRange<float>(0.0f, 1.0f, 0.005f),  // range with step size
+                0.5f        // default value
             ),
             std::make_unique<juce::AudioParameterFloat>(
                 "shapeY",    // parameter ID
                 "Shape Y",   // parameter name
-                0.0f,       // minimum value
-                1.0f,       // maximum value
-                0.5f       // default value
+                juce::NormalisableRange<float>(0.0f, 1.0f, 0.005f),  // range with step size
+                0.5f        // default value
             )
         })
 {
     // Get pointers to the atomic parameters for real-time audio processing
     volumeParameter = parameters.getRawParameterValue("volume");
     panParameter = parameters.getRawParameterValue("pan");
+
+    // Add listeners for shape parameters
+    parameters.addParameterListener("shapeX", this);
+    parameters.addParameterListener("shapeY", this);
 }
 
 RosemaryAudioProcessor::~RosemaryAudioProcessor()
 {
+    parameters.removeParameterListener("shapeX", this);
+    parameters.removeParameterListener("shapeY", this);
+}
+
+void RosemaryAudioProcessor::parameterChanged(const juce::String& parameterID, float newValue)
+{
+    if (parameterID == "shapeX")
+        muOscillator.setShapeX(newValue);
+    else if (parameterID == "shapeY")
+        muOscillator.setShapeY(newValue);
 }
 
 //==============================================================================
@@ -147,12 +156,18 @@ void RosemaryAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlo
     
     muOscillator.prepare(spec);
     muOscillator.setFrequency(static_cast<float>(frequency));
+    
+    // Prepare peak level calculators
+    preVolumePeakCalculator.prepare(spec);
+    postVolumePeakCalculator.prepare(spec);
 }
 
 void RosemaryAudioProcessor::releaseResources()
 {
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
+    preVolumePeakCalculator.reset();
+    postVolumePeakCalculator.reset();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -199,33 +214,22 @@ void RosemaryAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
     auto totalNumInputChannels  = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
 
-    // Only clear input channels if we have more outputs than inputs
+    // Clear any output channels that don't contain input data
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
 
     const float currentVol = *volumeParameter;
     const float pan = *panParameter;
 
-    // Convert AudioBuffer to AudioBlock
+    // Create an audio block and context for processing
     juce::dsp::AudioBlock<float> block(buffer);
-    
-    // Create a ProcessContext that will replace the output
     juce::dsp::ProcessContextReplacing<float> context(block);
     
-    // Process the audio through muOscillator
+    // Process the oscillator
     muOscillator.process(context);
-
-    // Debug: Check if we have any non-zero samples after oscillator
-    bool hasSignal = false;
-    for (int channel = 0; channel < totalNumOutputChannels && !hasSignal; ++channel) {
-        auto* channelData = buffer.getReadPointer(channel);
-        for (int sample = 0; sample < buffer.getNumSamples() && !hasSignal; ++sample) {
-            if (std::abs(channelData[sample]) > 0.0001f) {
-                hasSignal = true;
-                DBG("Signal detected after oscillator: " << channelData[sample] << " at sample " << sample);
-            }
-        }
-    }
+    
+    // Measure pre-volume peak level
+    preVolumePeakCalculator.process(context);
     
     // Apply volume and panning
     if (totalNumOutputChannels == 2)
@@ -235,26 +239,26 @@ void RosemaryAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juc
         const float leftGain = std::cos(panRadians) * currentVol;
         const float rightGain = std::sin(panRadians) * currentVol;
 
-        DBG("Volume: " << currentVol << " Pan: " << pan << " Left gain: " << leftGain << " Right gain: " << rightGain);
-
         buffer.applyGain(0, 0, buffer.getNumSamples(), leftGain);
         buffer.applyGain(1, 0, buffer.getNumSamples(), rightGain);
-
-        // Debug: Check if we have any non-zero samples after volume
-        hasSignal = false;
-        for (int channel = 0; channel < totalNumOutputChannels && !hasSignal; ++channel) {
-            auto* channelData = buffer.getReadPointer(channel);
-            for (int sample = 0; sample < buffer.getNumSamples() && !hasSignal; ++sample) {
-                if (std::abs(channelData[sample]) > 0.0001f) {
-                    hasSignal = true;
-                    DBG("Signal detected after volume: " << channelData[sample] << " at sample " << sample);
-                }
-            }
-        }
     }
     else
     {
+        // For mono, just apply volume
         buffer.applyGain(currentVol);
+    }
+    
+    // Measure post-volume peak level
+    postVolumePeakCalculator.process(context);
+    
+    // Reset peak meters every second (assuming 10Hz refresh rate in the UI)
+    static int sampleCount = 0;
+    sampleCount += buffer.getNumSamples();
+    if (sampleCount >= getSampleRate() / 10)
+    {
+        preVolumePeakCalculator.resetPeak();
+        postVolumePeakCalculator.resetPeak();
+        sampleCount = 0;
     }
 }
 
