@@ -155,6 +155,7 @@ if %ERRORLEVEL% equ 0 (
 :_arch_mismatch
 echo : Info: VST3 manifest generation is disabled for Rosemary because a AMD64 manifest helper cannot run on a host system processor detected to be $(PROCESSOR_ARCHITECTURE).
 :_continue
+xcopy /E /H /K /R /Y /I &quot;$(OutDir)\Rosemary.vst3&quot; &quot;%CommonProgramW6432%\VST3\_vst3DevBuilds\Rosemary.vst3\&quot;
 </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>

@@ -7,6 +7,6 @@ Builds/VisualStudio2022/.vs/
 **/Release/
 **/x64/
 **/x86/
-_Vst3Builds/
 
 *.bak
+*.vst3
